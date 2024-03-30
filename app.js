@@ -14,7 +14,6 @@ const csrf = require('csurf');
 const flash = require('connect-flash');
 const { isExcludedUrl } = require('./utils/urlMatchCheck');
 const cors = require('cors');
-
 const app = express();
 app.use(cors());
 app.use((req, res, next) => {
@@ -34,12 +33,13 @@ const testRoute = require('./routes/test')
 //user routes
 const userAuthRoutes = require('./routes/User/Auth/userAuthRoutes')
 
+//user payment routes
+const userPaymentRoutes = require('./routes/User/Payments/userPaymentController')
 
 app.use(bodyParser.urlencoded({ extended: false }));
 // app.use(bodyParser.json());
 // app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-
 
 const store = new MongoDBStore({
   uri: process.env.MONGO_URL || 'mongodb://127.0.0.1:27017/alweena',
@@ -99,6 +99,10 @@ app.use('/test',testRoute)
 //user routes
 
 app.use('/user/auth',userAuthRoutes)
+
+//user payment routes
+
+app.use('/user/payment',userPaymentRoutes)
 
 app.use(express.static('public'))
 
