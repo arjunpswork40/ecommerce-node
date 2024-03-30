@@ -7,16 +7,19 @@ const {
     loginData,
     forgetPass
 } = require('../../../app/controllers/User/Auth/userAuthController')
+const { registerUserRequestValidator } = require("../../../app/middlewares/validator/auth/registerUserRequestValidator")
+const { mobileNumberVerifyValidator } = require("../../../app/middlewares/validator/auth/mobileNumberVerifyValidator")
+const { verifyOTPValidator } = require("../../../app/middlewares/validator/auth/verifyOTPValidator")
 
 /* GET users listing. */
 
-router.post("/signuppost",postSignup)
+router.post("/signuppost",registerUserRequestValidator,postSignup)
 
 
-router.post("/send-otp",verify)
+router.post("/send-otp",mobileNumberVerifyValidator,verify)
 router.post("/login-post",loginData)
 
-router.post("/verifyOTp",verifyOtp)
+router.post("/verifyOTp",verifyOTPValidator,verifyOtp)
 router.patch("/resetpass",forgetPass)
 
 

@@ -1,7 +1,55 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt')
+
+const deliveryAddressSchema = new mongoose.Schema({
+  name:{
+    type: String,
+    required: true
+  },
+  address_line_1:{
+    type: String,
+    required: true
+  },
+  address_line_2:{
+    type: String,
+    required: true
+  },
+  postal_code:{
+    type: String,
+    required: true
+  },
+  land_mark:{
+    type: String,
+    required: true
+  },
+  phone:{
+    type: String,
+    required: true
+  },
+})
+
+const orderDetailSchema = new mongoose.Schema({
+  product_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref:'Product',
+    required: true
+  },
+  payment_id: {
+    type: String,
+    required: true
+  },
+  amount: {
+    type: Number,
+    required: true
+  }
+})
+
 const userSchema = new mongoose.Schema({
-  name: {
+  first_name: {
+    type: String,
+    required: false
+  },
+  last_name: {
     type: String,
     required: false
   },
@@ -18,22 +66,23 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: false
   },
-  roles: [{
-    type: String,
-    enum: ['super-admin', 'admin'],
-    default: ['admin']
-  }],
-  resetPasswordToken: {
-    type: String,
-    required: false,
-    // unique: true,
+  verified: {
+    type: Boolean,
+    required: true,
+    default: false
   },
-  resetPasswordExpires: {
-    type: Date,
-    default: null,
-    required: false,
-    // unique: false
+  delivery_addresses: [deliveryAddressSchema],
+  cart_products: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Product',
+      required: false
   },
+  wish_list_products: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Product',
+      required: false
+  },
+  order_details: [orderDetailSchema],
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });
@@ -43,7 +92,7 @@ userSchema.methods.isValidPassword = async function (password) {
   try {
     return await bcrypt.compare(password, this.password);
   } catch (err) {
-    // console.log(err)
+    console.log(err)
     // throw new Error(err);
   }
 };
