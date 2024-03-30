@@ -16,8 +16,8 @@ module.exports = {
     insertDummyUser: async (req, res, next) => {
         try{
             let user = new User({
-                name:'arjun',
-                email:'arjun@ar.com',
+                name:'ardsjudn',
+                email:'ardjusn@ard.com',
 
             })
             user.save();
