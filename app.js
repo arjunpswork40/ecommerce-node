@@ -34,7 +34,7 @@ const testRoute = require('./routes/test')
 const userAuthRoutes = require('./routes/User/Auth/userAuthRoutes')
 
 //user payment routes
-const userPaymentRoutes = require('./routes/User/Payments/userPaymentController')
+const userPaymentRoutes = require('./routes/User/Payments/userPaymentRoutes')
 
 app.use(bodyParser.urlencoded({ extended: false }));
 // app.use(bodyParser.json());
