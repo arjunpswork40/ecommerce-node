@@ -51,8 +51,8 @@ module.exports = {
             // const valuesFromToken = jwt.verify(apiAuthKeyFromRequest,apiAuthKey);
             let valuesFromToken = false;
             try{
-                const tokenToCheck = apiAuthKeyFromRequest.slice(12,-34)
-                valuesFromToken = jwt.verify(tokenToCheck, apiAuthKey, { algorithm: 'HS256' });
+                // const tokenToCheck = apiAuthKeyFromRequest.slice(12,-34)
+                valuesFromToken = jwt.verify(apiAuthKeyFromRequest, apiAuthKey, { algorithm: 'HS256' });
             } catch (error) {
                 console.error('Error verifying token:', error.message);
                 console.error('Token:', apiAuthKeyFromRequest);
