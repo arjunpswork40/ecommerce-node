@@ -19,6 +19,16 @@ const registerUserRequestValidator = [
     body('mobileNumber')
         .matches(/^[0-9]{10}$/)
         .withMessage('Please enter a valid 10-digit mobile number'),
+    body('first_name')
+        .notEmpty()
+        .withMessage('First name cannot be empty')
+        .isLength({ min: 2 })
+        .withMessage('First name must have at least two characters'),
+    body('last_name')
+        .notEmpty()
+        .withMessage('Last name cannot be empty')
+        .isLength({ min: 1 })
+        .withMessage('Last name must have at least one character'),
     (req, res, next) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {

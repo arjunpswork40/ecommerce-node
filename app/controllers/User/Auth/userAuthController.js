@@ -40,59 +40,90 @@ module.exports = {
     },
     postSignup: async (req, res) => {
 
-        const { UserName, email, phoneNumber, password } = req.body;
-        const existingUser = await userModel.findOne({ email: email })
+        const { first_name, last_name, email, mobileNumber, password } = req.body;
 
-        if (existingUser) {
+        try{
+            const existingUser = await User.findOne({ email: email })
+            if (existingUser) {
 
-            await res.status(400).json({ error: "User already exist.please login" })
+                responseData.httpStatusCode = 400;
+                responseData.message = "User already exist.please login"
 
-        } else {
+            } else {
+    
+                const user = new User({
+                    first_name: first_name,
+                    last_name: last_name,
+                    email: email,
+                    mobileNumber: mobileNumber,
+                    password: password
+                })
+                await user.save()
 
-            const hashedPassword = await bcrypt.hash(password, 10);
-            const user = new userModel({
-                UserName: UserName,
-                email: email,
-                phoneNumber: phoneNumber,
-                password: hashedPassword
-            })
-            await user.save()
-            res.status(200).json({ message: "user logged" }
-            )
+                responseData.httpStatusCode = 200;
+                responseData.data = user;
+                responseData.success = true;
+                responseData.message = "User registered successfuly."
 
-
+            }
+        } catch(error) {
+            responseData.httpStatusCode = 500;
+            responseData.error = error;
+            responseData.message = "User registeration failed."
         }
 
+        const response = makeJsonResponse(
+                                responseData.message,
+                                responseData.data,
+                                responseData.error,
+                                responseData.httpStatusCode,
+                                responseData.success);
+        return res.status(responseData.httpStatusCode).json(response);
     },
     verify: async (req, res) => {
 
         const phoneNumber = req.body.phoneNumber;
-        const phone = await userModel.findOne({ phoneNumber: phoneNumber })
-        if (phone) {
 
-            twilio(phoneNumber).then(() => {
-                res.status(200).json({ otpsend: true, message: "data saved successfully" })
-            }).catch(() => {
-                res.status(400).json({ otpsend: false, error: "OTP send failed.please enter a valid number" })
-            })
-
-        } else {
-            await res.status(400).json({ error: "enter a valid number" })
+        try{
+            const phone = await User.findOne({ phoneNumber: phoneNumber })
+            if (phone && !phone.verified) {
+    
+                twilio(phoneNumber).then(() => {
+                    responseData.httpStatusCode = 200;
+                    responseData.data = phone;
+                    responseData.success = true;
+                    responseData.message = "User verification otp sended successfuly."
+                }).catch(() => {
+                    responseData.httpStatusCode = 400;
+                    responseData.message = "OTP send failed.please enter a valid number"
+                })    
+            } else {
+                responseData.httpStatusCode = 400;
+                responseData.message = "enter a valid number"
+            }
+        }catch(error){
+            responseData.httpStatusCode = 500;
+            responseData.error = error;
+            responseData.message = "Something went wrong."
         }
 
-
-
-        // console.log(req.body);
-        // Your OTP verification logic goes here
+        const response = makeJsonResponse(
+            responseData.message,
+            responseData.data,
+            responseData.error,
+            responseData.httpStatusCode,
+            responseData.success);
+        return res.status(responseData.httpStatusCode).json(response);
 
     },
 
     verifyOtp: async (req, res) => {
         const { otp, phoneNumber } = req.body;
         try {
-            const existingUser = await userModel.findOne({ phoneNumber: phoneNumber });
+            const existingUser = await User.findOne({ phoneNumber: phoneNumber });
             if (!existingUser) {
-                return res.status(401).json({ error: "Please enter an existing number" });
+                responseData.httpStatusCode = 401;
+                responseData.message = "Please enter an existing number"
             }
     
             const concatedOtp = parseInt(otp.join(""));
@@ -101,22 +132,30 @@ module.exports = {
                 const verificationChecks = await twilioVerify(phoneNumber, concatedOtp);
                 console.log(verificationChecks.status);
                 if (verificationChecks.status !== "approved") {
-                    res.status(401).json({ error: "OTP is not valid" });
+                    responseData.httpStatusCode = 401;
+                    responseData.message = "OTP is not valid"
                 } else {
-                    res.status(200).json({ message: "OTP validation completed" });
+                    responseData.httpStatusCode = 200;
+                    responseData.data = existingUser;
+                    responseData.success = true;
+                    responseData.message =  "OTP validation completed";
                 }
             }
         } catch (error) {
+            responseData.httpStatusCode = 500;
+            responseData.error = error;
+            responseData.message =  "Internal server error";
             console.error("Error during OTP verification ", error);
-            res.status(500).json({ error: "Internal server error" });
         }
+
+        const response = makeJsonResponse(
+            responseData.message,
+            responseData.data,
+            responseData.error,
+            responseData.httpStatusCode,
+            responseData.success);
+        return res.status(responseData.httpStatusCode).json(response);
     },
-    
-
-
-
-    
-       
     
     loginData: async (req, res) => {
         const { phoneNumber, password } = req.body;
