@@ -32,6 +32,7 @@ const testRoute = require('./routes/test')
 
 //user routes
 const userAuthRoutes = require('./routes/User/Auth/userAuthRoutes')
+const cartRoutes=require('./routes/User/Cart/cartRoutes')
 
 //user payment routes
 const userPaymentRoutes = require('./routes/User/Payments/userPaymentRoutes')
@@ -99,6 +100,7 @@ app.use('/test',testRoute)
 //user routes
 
 app.use('/user/auth',userAuthRoutes)
+app.use('/user/cart',cartRoutes)
 
 //user payment routes
 

@@ -8,7 +8,7 @@ const client = twilio(accountSid, authId);
 const otpgenerate = async function (phone) {
   console.log(phone);
   try{
-  verification = await client.verify.v2
+  const verification = await client.verify.v2
     .services(`${serviceSid}`)
       .verifications.create({ to: `${countryCode}${phone}`, channel: "sms" });
   }catch(error){
