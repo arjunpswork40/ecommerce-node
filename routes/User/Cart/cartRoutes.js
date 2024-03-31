@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const verifier=require('../../../app/middlewares/auth/tokenVerifier')
 
 const {
     addToCart,
@@ -10,19 +11,19 @@ const {
 } = require('../../../app/controllers/User/Cart/cartController')
 
 //add to cart
-router.post("/addToCart",addToCart)
+router.post("/addToCart",verifier.tokenVerifier,addToCart)
 
 //get items in the cart
-router.get('/cartItems',getCartItems)
+router.get('/cartItems',verifier.tokenVerifier,getCartItems)
 
 //delete item from the cart
-router.delete('/removeItem/:productId',deleteCartItem)
+router.delete('/removeItem/:productId',verifier.tokenVerifier,deleteCartItem)
 
 //clear cart
-router.delete('/clearCart',clearCart)
+router.delete('/clearCart',verifier.tokenVerifier,clearCart)
 
 //update item quantity
-router.put('/updateQuantity',updateQuantity)
+router.put('/updateQuantity',verifier.tokenVerifier,updateQuantity)
 
 
 module.exports = router;
