@@ -7,13 +7,13 @@ const client = twilio(accountSid, authId);
 // code to send otp
 const otpgenerate = async function (phone) {
   console.log(phone);
-  try{
-  const verification = await client.verify.v2
-    .services(`${serviceSid}`)
+  try {
+    const verification = await client.verify.v2
+      .services(`${serviceSid}`)
       .verifications.create({ to: `${countryCode}${phone}`, channel: "sms" });
-  }catch(error){
-console.log(error);
-throw error
+  } catch (error) {
+    console.log(error);
+    throw error;
   }
 };
 

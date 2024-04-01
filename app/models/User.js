@@ -44,6 +44,30 @@ const orderDetailSchema = new mongoose.Schema({
   }
 })
 
+const cartSchema = new mongoose.Schema({
+  product_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref:'Product',
+    required: true
+  },
+  quantity: {
+    type: Number,
+    required: true
+  }
+})
+
+const wishListSchema = new mongoose.Schema({
+  product_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref:'Product',
+    required: true
+  },
+  quantity: {
+    type: Number,
+    required: true
+  }
+})
+
 const userSchema = new mongoose.Schema({
   first_name: {
     type: String,
@@ -72,6 +96,7 @@ const userSchema = new mongoose.Schema({
     default: false
   },
   delivery_addresses: [deliveryAddressSchema],
+<<<<<<< HEAD
   cart_products: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Product',
@@ -82,6 +107,10 @@ const userSchema = new mongoose.Schema({
       ref: 'Product',
       required: false
   }],
+=======
+  cart_products:[cartSchema],
+  wish_list_products: [wishListSchema],
+>>>>>>> main
   order_details: [orderDetailSchema],
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
