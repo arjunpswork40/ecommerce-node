@@ -6,7 +6,7 @@ const twilio = require('../../../../utils/twilio/twilio')
 const bcrypt = require('bcrypt')
 const twilioVerify = require("../../../../utils/twilio/twilioVerify")
 const jwt = require('jsonwebtoken')
-const secretKey = 'my-secret-key'
+const secretKey =  process.env.SECRET_KEY_JWT || '$123EA$456$9633972298$';
 
 let responseData = {
     message : 'Some Error Occured',
@@ -43,9 +43,9 @@ module.exports = {
         const { first_name, last_name, email, mobileNumber, password } = req.body;
 
         try{
-            const existingUser = await User.findOne({ email: email })
+            const existingUser = await User.findOne({ mobileNumber: mobileNumber })
             if (existingUser) {
-
+                responseData.data = {userAlreadyExistStatus:true}
                 responseData.httpStatusCode = 400;
                 responseData.message = "User already exist.please login"
 
@@ -59,9 +59,11 @@ module.exports = {
                     password: password
                 })
                 await user.save()
-
+                const userData = user.toObject();
+                userData.userAlreadyExistStatus = false
+                delete userData.password;
                 responseData.httpStatusCode = 200;
-                responseData.data = user;
+                responseData.data = userData;
                 responseData.success = true;
                 responseData.message = "User registered successfuly."
 
@@ -82,15 +84,15 @@ module.exports = {
     },
     verify: async (req, res) => {
 
-        const phoneNumber = req.body.phoneNumber;
-
+        const mobileNumber = req.body.mobileNumber;
         try{
-            const phone = await User.findOne({ phoneNumber: phoneNumber })
-            if (phone && !phone.verified) {
+            const user = await User.findOne({ mobileNumber: mobileNumber })
+
+            if (user && !user.verified) {
     
-                twilio(phoneNumber).then(() => {
+                twilio(mobileNumber).then(() => {
                     responseData.httpStatusCode = 200;
-                    responseData.data = phone;
+                    responseData.data = user;
                     responseData.success = true;
                     responseData.message = "User verification otp sended successfuly."
                 }).catch(() => {
@@ -98,10 +100,12 @@ module.exports = {
                     responseData.message = "OTP send failed.please enter a valid number"
                 })    
             } else {
+
                 responseData.httpStatusCode = 400;
                 responseData.message = "enter a valid number"
             }
         }catch(error){
+
             responseData.httpStatusCode = 500;
             responseData.error = error;
             responseData.message = "Something went wrong."
@@ -113,6 +117,7 @@ module.exports = {
             responseData.error,
             responseData.httpStatusCode,
             responseData.success);
+
         return res.status(responseData.httpStatusCode).json(response);
 
     },
@@ -162,27 +167,35 @@ module.exports = {
         try {
             const existingUser = await User.findOne({ phoneNumber: phoneNumber });
             if (!existingUser) {
-                return res.status(404).json({ error: "User not found" });
+                responseData.httpStatusCode = 404;
+                responseData.message = "User not found"
             }
     
             const isPasswordValid = await bcrypt.compare(password, existingUser.password);
             if (!isPasswordValid) {
-                return res.status(401).json({ error: "Invalid password" });
+                responseData.httpStatusCode = 401;
+                responseData.message = "Invalid password"
             }
     
-            // If user is an admin, return userType as 'admin', else return 'user'
-            const userType = existingUser.role === 'admin' ? 'admin' : 'user';
     
             // Generate JWT token
             const token = jwt.sign({ userId: existingUser._id }, secretKey, { expiresIn: '1h' });
-    
-            // Send the response with token and userType
-            res.status(200).json({ token, message: "login successful", userType });
-    
+            
+            responseData.success = true;
+            responseData.httpStatusCode = 200;
+            responseData.message = "login successful"
+            responseData.data = {token : token }
         } catch (error) {
+            responseData.message = "Internal server error" 
             console.error("Error during login ", error);
-            res.status(500).json({ error: "Internal server error" });
         }
+        const response = makeJsonResponse(
+            responseData.message,
+            responseData.data,
+            responseData.error,
+            responseData.httpStatusCode,
+            responseData.success);
+        return res.status(responseData.httpStatusCode).json(response);
     },
 
     

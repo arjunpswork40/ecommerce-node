@@ -1,7 +1,8 @@
 const { makeJsonResponse } = require("../../../utils/response")
 const jwt = require('jsonwebtoken');
 const Token = require("../../models/Token");
-
+const User = require("../../models/User");
+const { default: mongoose } = require("mongoose");
 module.exports = {
     
     tokenVerifierFromDB: async (req, res, next) => {
@@ -43,6 +44,7 @@ module.exports = {
     },
     tokenVerifier: async (req, res, next) => {
         let apiAuthKeyFromRequest = req.headers['authorization'];
+        console.log('apiAuthKeyFromRequest=>',apiAuthKeyFromRequest)
         let apiAuthKey = process.env.SECRET_KEY_JWT || '$123EA$456$9633972298$';
         if (apiAuthKeyFromRequest) {
 
@@ -63,7 +65,17 @@ module.exports = {
                 const currentTime = Math.floor(Date.now() / 1000);
                 console.log(currentTime < valuesFromToken.exp)
                 if(currentTime < valuesFromToken.exp) {
-                    next();
+                    const ObjectId = mongoose.Types.ObjectId;
+                    const userId = new ObjectId(valuesFromToken.userId);
+                    const userDetails = await User.findById(valuesFromToken.userId)
+                    if(userDetails){
+                        req.userData = userDetails;
+                        next();
+                    } else {
+                        let response = makeJsonResponse(`Unauthenticated API request`, {}, {}, 401, false);
+                        return res.status(401).json(response);
+                    }
+                    
                 } else {
                     let response = makeJsonResponse(`Unauthenticated API request`, {}, {}, 401, false);
                     return res.status(401).json(response);
