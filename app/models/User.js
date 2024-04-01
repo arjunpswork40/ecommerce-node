@@ -77,11 +77,11 @@ const userSchema = new mongoose.Schema({
       ref: 'Product',
       required: false
   },
-  wish_list_products: {
+  wish_list_products:[ {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Product',
       required: false
-  },
+  }],
   order_details: [orderDetailSchema],
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
