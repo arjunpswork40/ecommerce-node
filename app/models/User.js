@@ -79,7 +79,8 @@ const userSchema = new mongoose.Schema({
   },
   mobileNumber: {
     type: String,
-    required: false
+    required: false,
+    unique: true
   },
   email: {
     type: String,
@@ -116,8 +117,22 @@ const userSchema = new mongoose.Schema({
   updatedAt: { type: Date, default: Date.now },
 });
 
+userSchema.pre('save', async function(next) {
+  try {
+    if (!this.isModified('password')) {
+      return next(); // If password is not modified, move to the next middleware
+    }
+    
+    const hashedPassword = await bcrypt.hash(this.password, 10); // Hash the password
+    this.password = hashedPassword; // Store hashed password
+    next();
+  } catch (error) {
+    next(error);
+  }
+});
+
 userSchema.methods.isValidPassword = async function (password) {
-  console.log(password, this.password)
+  console.log('password=>',password, this.password)
   try {
     return await bcrypt.compare(password, this.password);
   } catch (err) {

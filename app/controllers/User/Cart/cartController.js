@@ -1,5 +1,7 @@
 const User = require("../../../models/User");
 const { makeJsonResponse } = require("../../../../utils/response");
+const Product = require("../../../models/Product");
+const { ObjectId } = require("bson");
 
 let responseData = {
   message: "Some Error Occured",
@@ -17,32 +19,39 @@ module.exports = {
       const { product_id, quantity } = req.body;
 
       // Fetch the user
-      const user = await User.findById(userId);
-      if (!user) {
-        responseData.success = false;
-        responseData.httpStatusCode = 404;
-        responseData.message = "User not found";
-        throw new Error("User not found");
-      }
+      let user = req.userData;
+      let product = await Product.findById(new ObjectId(product_id)).select("_id")
+      
+      if(product){
+        // Check if the product is already in the cart
+        // const existingCartItem = user.cart_products.find((item) => item.product_id === new ObjectId(product_id));
+        const existingCartItem = user.cart_products.find(item => item.product_id.equals(new ObjectId(product_id)));
 
-      // Check if the product is already in the cart
-      const existingCartItem = user.cart_products.find((item) => item.product_id === product_id);
+        console.log('existingCartItem=>',existingCartItem)
+        if (existingCartItem) {
+          // If the product is already in the cart, update its quantity
+          existingCartItem.quantity += parseInt(quantity);
+          responseData.message = "Quantity of the carted product updated";
+        } else {
+          // If the product is not in the cart, add it as a new item
+          user.cart_products.push({ product_id, quantity });
+          responseData.message = "Product added to cart";
+        }
 
-      if (existingCartItem) {
-        // If the product is already in the cart, update its quantity
-        existingCartItem.quantity += quantity;
-        responseData.message = "Quantity of the carted product updated";
+        let userUpdate = await User.findByIdAndUpdate(
+          user._id,
+          {$set: {cart_products: user.cart_products}},
+          {new: true}
+        )
+
+        responseData.success = true;
+        responseData.httpStatusCode = 200;
+        responseData.data = userUpdate;
       } else {
-        // If the product is not in the cart, add it as a new item
-        user.cart_products.push({ product_id, quantity });
-        responseData.message = "Product added to cart";
+        responseData.httpStatusCode = 404;
+        responseData.message = "Product not found";
+
       }
-
-      // Save the user with updated cart
-      await user.save();
-
-      responseData.success = true;
-      responseData.httpStatusCode = 200;
     } catch (error) {
       console.error(error);
       responseData.error.push(error.message);
