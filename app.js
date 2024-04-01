@@ -38,6 +38,9 @@ const reviewRoute=require('./routes/User/Review/reviewRoute')
 //user payment routes
 const userPaymentRoutes = require('./routes/User/Payments/userPaymentRoutes')
 
+//admin routes
+const adminAuthRoutes=require('./routes/Admin/Auth/adminAuthRoutes')
+
 app.use(bodyParser.urlencoded({ extended: false }));
 // app.use(bodyParser.json());
 // app.use(express.urlencoded({ extended: true }));
@@ -107,6 +110,10 @@ app.use('/user/review',reviewRoute)
 //user payment routes
 
 app.use('/user/payment',userPaymentRoutes)
+
+//admin routes
+
+app.use('/admin',adminAuthRoutes)
 
 app.use(express.static('public'))
 
