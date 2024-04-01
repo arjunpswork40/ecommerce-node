@@ -32,8 +32,6 @@ const testRoute = require('./routes/test')
 
 //user routes
 const userAuthRoutes = require('./routes/User/Auth/userAuthRoutes')
-const cartRoutes=require('./routes/User/Cart/cartRoutes')
-const reviewRoute=require('./routes/User/Review/reviewRoute')
 
 //user payment routes
 const userPaymentRoutes = require('./routes/User/Payments/userPaymentRoutes')
@@ -106,6 +104,8 @@ app.use('/test',testRoute)
 app.use('/user/auth',userAuthRoutes)
 app.use('/user/cart',cartRoutes)
 app.use('/user/review',reviewRoute)
+
+app.use ('/user/wishlist',wishlist)
 
 //user payment routes
 

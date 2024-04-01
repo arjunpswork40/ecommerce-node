@@ -96,8 +96,21 @@ const userSchema = new mongoose.Schema({
     default: false
   },
   delivery_addresses: [deliveryAddressSchema],
+<<<<<<< HEAD
+  cart_products: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Product',
+      required: false
+  },
+  wish_list_products:[ {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Product',
+      required: false
+  }],
+=======
   cart_products:[cartSchema],
   wish_list_products: [wishListSchema],
+>>>>>>> main
   order_details: [orderDetailSchema],
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
