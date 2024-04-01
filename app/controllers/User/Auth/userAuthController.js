@@ -160,7 +160,7 @@ module.exports = {
     loginData: async (req, res) => {
         const { phoneNumber, password } = req.body;
         try {
-            const existingUser = await userModel.findOne({ phoneNumber: phoneNumber });
+            const existingUser = await User.findOne({ phoneNumber: phoneNumber });
             if (!existingUser) {
                 return res.status(404).json({ error: "User not found" });
             }
