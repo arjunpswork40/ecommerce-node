@@ -9,7 +9,7 @@ exports.validateFeedback = [
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
 
-            response = makeJsonResponse(`Validation error.`, {}, errors.array(), 400, false);
+            let response = makeJsonResponse(`Validation error.`, {}, errors.array(), 400, false);
             return res.status(400).json(response);
         }
         next();

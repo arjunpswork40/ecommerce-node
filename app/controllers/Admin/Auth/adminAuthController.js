@@ -29,8 +29,7 @@ module.exports = {
         expiresIn: "1h",
       });
 
-      const newToken = new Token({ token, from: "admin", userId: admin._id });
-      await newToken.save();
+      await Token.create({ token, from: "admin", userId: admin._id });
 
       // Respond with token
       res.status(200).json(makeJsonResponse("Login successful", { token }, {}, 200, true));
@@ -46,13 +45,13 @@ module.exports = {
   //send otp to registered phone number
   SendOtp: async (req, res) => {
     try {
-      const { phone } = req.body;
-      const exist = await Admin.findOne({ phone });
+      const { mobileNumber } = req.body;
+      const exist = await Admin.findOne({ mobileNumber });
 
       if (exist) {
-        twilio(phone)
+        twilio(mobileNumber)
           .then(() => {
-            const response = makeJsonResponse("OTP sent successfully", { phone }, {}, 200, true);
+            const response = makeJsonResponse("OTP sent successfully", { mobileNumber }, {}, 200, true);
             return res.status(200).json(response);
           })
           .catch((error) => {
@@ -80,13 +79,13 @@ module.exports = {
   // verify otp
   verifyOtp: async (req, res) => {
     try {
-      const { phone, otp } = req.body;
-      const verificationCheck = await twilioVerify(phone, otp);
+      const { mobileNumber, otp } = req.body;
+      const verificationCheck = await twilioVerify(mobileNumber, otp);
 
       if (verificationCheck && verificationCheck.status === "approved") {
         return res
           .status(200)
-          .json(makeJsonResponse("OTP verified successfully", { phone }, {}, 200, true));
+          .json(makeJsonResponse("OTP verified successfully", { mobileNumber }, {}, 200, true));
       } else {
         return res
           .status(400)
@@ -102,11 +101,11 @@ module.exports = {
   // update password
   UpdatePassword: async (req, res) => {
     try {
-      const { phone, password } = req.body;
+      const { mobileNumber, password } = req.body;
       const newpassword = await bcrypt.hash(password, 10);
 
       const updatedAdmin = await Admin.findOneAndUpdate(
-        { phone },
+        { phone:mobileNumber },
         { $set: { password: newpassword } }
       );
 

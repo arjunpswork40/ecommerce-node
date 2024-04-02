@@ -15,34 +15,37 @@ module.exports = {
   // Add items to the cart
   addToCart: async (req, res) => {
     try {
-      const userId = req.user;
-      const { product_id, quantity } = req.body;
+      const { productId, quantity } = req.body;
 
       // Fetch the user
       let user = req.userData;
-      let product = await Product.findById(new ObjectId(product_id)).select("_id")
-      
-      if(product){
-        // Check if the product is already in the cart
-        // const existingCartItem = user.cart_products.find((item) => item.product_id === new ObjectId(product_id));
-        const existingCartItem = user.cart_products.find(item => item.product_id.equals(new ObjectId(product_id)));
+      let product = await Product.findById(new ObjectId(productId)).select("_id");
 
-        console.log('existingCartItem=>',existingCartItem)
+      if (product) {
+        // Check if the product is already in the cart
+        const existingCartItem = user.cart_products.find((item) =>
+          item.product_id.equals(new ObjectId(productId))
+        );
+
+        console.log("existingCartItem=>", existingCartItem);
         if (existingCartItem) {
           // If the product is already in the cart, update its quantity
           existingCartItem.quantity += parseInt(quantity);
           responseData.message = "Quantity of the carted product updated";
         } else {
           // If the product is not in the cart, add it as a new item
-          user.cart_products.push({ product_id, quantity });
+          user.cart_products.push({
+            product_id: new ObjectId(productId),
+            quantity: parseInt(quantity)
+          });
           responseData.message = "Product added to cart";
         }
 
         let userUpdate = await User.findByIdAndUpdate(
           user._id,
-          {$set: {cart_products: user.cart_products}},
-          {new: true}
-        )
+          { $set: { cart_products: user.cart_products } },
+          { new: true }
+        );
 
         responseData.success = true;
         responseData.httpStatusCode = 200;
@@ -50,7 +53,6 @@ module.exports = {
       } else {
         responseData.httpStatusCode = 404;
         responseData.message = "Product not found";
-
       }
     } catch (error) {
       console.error(error);
@@ -69,17 +71,10 @@ module.exports = {
   //get cart items
   getCartItems: async (req, res) => {
     try {
-      const userId = req.user;
-      const user = await User.findById(userId).populate("cart_products.product_id");
+      const user = req.userData;
+      const userCartData = await user.populate("cart_products.product_id");
 
-      if (!user) {
-        responseData.success = false;
-        responseData.httpStatusCode = 404;
-        responseData.message = "User not found";
-        throw new Error("User not found");
-      }
-
-      const cartItems = user.cart_products.map((item) => ({
+      const cartItems = userCartData.cart_products.map((item) => ({
         productId: item.product_id._id,
         productName: item.product_id.name,
         quantity: item.quantity,
@@ -109,21 +104,13 @@ module.exports = {
   //delete item from cart
   deleteCartItem: async (req, res) => {
     try {
-      const userId = req.user;
       const productId = req.params.productId;
-
-      // Fetch the user
-      const user = await User.findById(userId);
-
-      // Check if the user exists
-      if (!user) {
-        responseData.httpStatusCode = 404;
-        responseData.message = "User not found";
-        throw new Error("User not found");
-      }
+      const user = req.userData;
 
       // Find the index of the item in the cart
-      const itemIndex = user.cart_products.findIndex((item) => item.product_id === productId);
+      const itemIndex = user.cart_products.findIndex((item) =>
+        item.product_id.equals(new ObjectId(productId))
+      );
 
       // Check if the item exists in the cart
       if (itemIndex === -1) {
@@ -133,10 +120,10 @@ module.exports = {
       }
 
       // Remove the item from the cart
-      user.cart_products.splice(itemIndex, 1);
-
-      // Save the updated user document
-      await user.save();
+      await User.findOneAndUpdate(
+        { _id: user._id },
+        { $pull: { cart_products: { product_id: new ObjectId(productId) } } }
+      );
 
       // Set success response data
       responseData.httpStatusCode = 200;
@@ -160,23 +147,13 @@ module.exports = {
   //clear cart
   clearCart: async (req, res) => {
     try {
-      const userId = req.user;
-
-      // Fetch the user
-      const user = await User.findById(userId);
-
-      // Check if the user exists
-      if (!user) {
-        responseData.httpStatusCode = 404;
-        responseData.message = "User not found";
-        throw new Error("User not found");
-      }
+      const user = req.userData
 
       // Clear the cart products array
-      user.cart_products = [];
-
-      // Save the updated user document
-      await user.save();
+      await User.findOneAndUpdate(
+        { _id: user._id },
+        { $set: { cart_products: [] } }
+      );
 
       // Set success response data
       responseData.httpStatusCode = 200;
@@ -200,21 +177,13 @@ module.exports = {
   //update cart item quantity
   updateQuantity: async (req, res) => {
     try {
-      const userId = req.user;
       const { productId, newQuantity } = req.body;
-
-      // Fetch the user
-      const user = await User.findById(userId);
-
-      // Check if the user exists
-      if (!user) {
-        responseData.httpStatusCode = 404;
-        responseData.message = "User not found";
-        throw new Error("User not found");
-      }
+      const user = req.userData
 
       // Find the cart product by productId
-      const cartProduct = user.cart_products.find((product) => product.product_id === productId);
+      const cartProduct = user.cart_products.find((item) =>
+      item.product_id.equals(new ObjectId(productId)));
+      
 
       // Check if the cart product exists
       if (!cartProduct) {
@@ -224,10 +193,10 @@ module.exports = {
       }
 
       // Update the quantity of the item
-      cartProduct.quantity = newQuantity;
-
-      // Save the user with updated cart
-      await user.save();
+      await User.findOneAndUpdate(
+        { _id: user._id, "cart_products.product_id": new ObjectId(productId) },
+        { $set: { "cart_products.$.quantity": newQuantity } }
+      );
 
       // Set success response data
       responseData.httpStatusCode = 200;
