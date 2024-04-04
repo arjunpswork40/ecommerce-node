@@ -41,6 +41,10 @@ const orderDetailSchema = new mongoose.Schema({
   amount: {
     type: Number,
     required: true
+  },
+  status:{
+    type:String,
+    default:'pending'
   }
 })
 
@@ -80,7 +84,7 @@ const userSchema = new mongoose.Schema({
   mobileNumber: {
     type: String,
     required: false,
-    unique: true
+    unique: true  
   },
   email: {
     type: String,
