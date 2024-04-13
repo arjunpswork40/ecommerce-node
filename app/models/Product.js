@@ -66,6 +66,9 @@ const productSchema = new mongoose.Schema({
     type: String,
     required: false
   },
+  images:[{
+    type:String
+  }],
   items_in_the_box: [{
     type: String,
     required: false

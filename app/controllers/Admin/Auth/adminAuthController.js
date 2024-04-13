@@ -76,6 +76,7 @@ module.exports = {
     }
   },
 
+  //admin password reset
   // verify otp
   verifyOtp: async (req, res) => {
     try {

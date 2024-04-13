@@ -5,7 +5,7 @@ module.exports = {
   // list all users
   listUsers: async (req, res) => {
     try {
-      const users = await User.find({},{ password: 0 });
+      const users = await User.find({},{ first_name:1,last_name:1,phone: 1, email: 1 });
       const response = makeJsonResponse("Users fetched successfully", users, [], 200, true);
       res.status(200).json(response);
     } catch (error) {
@@ -99,4 +99,36 @@ module.exports = {
         .json(makeJsonResponse("Failed to delete user", {}, [error.message], 500, false));
     }
   },
+
+  //change blocked status
+  blockOrUnblock : async (req, res) => {
+    try {
+      const userId = req.params.userId;
+  
+      // Find the user 
+      const user = await User.findById(userId);
+  
+      if (!user) {
+        const response = makeJsonResponse('User not found', {}, ['User not found'], 404, false);
+        return res.status(404).json(response);
+      }
+  
+      // change blocked status
+      user.blocked = !user.blocked;
+  
+      // Save the updated user
+      const updatedUser = await user.save();
+  
+      //success response
+      const message = `User ${updatedUser.blocked ? 'blocked' : 'unblocked'} successfully`;
+      const data = { user: updatedUser };
+      const response = makeJsonResponse(message, data, [], 200, true);
+  
+      res.status(200).json(response);
+    } catch (error) {
+      console.error(error);
+      const response = makeJsonResponse('Failed to change block status', {}, [error.message], 500, false);
+      res.status(500).json(response);
+    }
+  }
 };

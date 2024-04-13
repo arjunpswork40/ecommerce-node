@@ -100,6 +100,10 @@ const userSchema = new mongoose.Schema({
     required: true,
     default: false
   },
+  blocked: {
+    type: Boolean,
+    default: false
+  },
   delivery_addresses: [deliveryAddressSchema],
   cart_products:[cartSchema],
   wish_list_products: [wishListSchema],
