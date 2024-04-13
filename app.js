@@ -43,6 +43,7 @@ const userPaymentRoutes = require('./routes/User/Payments/userPaymentRoutes')
 const adminAuthRoutes=require('./routes/Admin/Auth/adminAuthRoutes')
 const userCrudRoutes=require('./routes/Admin/userCrud/userCrudRoutes')
 const orderRoutes=require('./routes/Admin/Order/orderRoutes')
+const productCrudRoutes=require('./routes/Admin/productCRUD/productCrudRoutes')
 
 app.use(bodyParser.urlencoded({ extended: false }));
 // app.use(bodyParser.json());
@@ -121,6 +122,8 @@ app.use('/user/payment',userPaymentRoutes)
 app.use('/admin',adminAuthRoutes)
 app.use('/admin/userCrud',userCrudRoutes)
 app.use('/admin/orders',orderRoutes)
+app.use('/admin/productCrud',productCrudRoutes)
+
 
 app.use(express.static('public'))
 
