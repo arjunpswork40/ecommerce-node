@@ -19,12 +19,12 @@ const registerUserRequestValidator = [
     body('mobileNumber')
         .matches(/^[0-9]{10}$/)
         .withMessage('Please enter a valid 10-digit mobile number'),
-    body('first_name')
+    body('firstName')
         .notEmpty()
         .withMessage('First name cannot be empty')
         .isLength({ min: 2 })
         .withMessage('First name must have at least two characters'),
-    body('last_name')
+    body('lastName')
         .notEmpty()
         .withMessage('Last name cannot be empty')
         .isLength({ min: 1 })
