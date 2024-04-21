@@ -60,7 +60,7 @@ module.exports = {
                 console.error('Token:', apiAuthKeyFromRequest);
                 let response = makeJsonResponse(`Unauthenticated API request`, {}, {}, 401, false);
                 return res.status(401).json(response);
-              }
+            }
             if (valuesFromToken) {
                 const currentTime = Math.floor(Date.now() / 1000);
                 console.log(currentTime < valuesFromToken.exp)

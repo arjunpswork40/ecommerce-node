@@ -6,7 +6,7 @@ const verifyOTPValidator = [
         .matches(/^[0-9]{10}$/)
         .withMessage('Please enter a valid 10-digit mobile number'),
     body('otp')
-        .matches(/^[0-9]{10}$/)
+        .matches(/^[0-9]{6}$/)
         .withMessage('Please enter a valid OTP'),
     (req, res, next) => {
         const errors = validationResult(req);
