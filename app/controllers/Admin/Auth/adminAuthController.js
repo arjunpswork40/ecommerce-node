@@ -1,11 +1,10 @@
 const Admin = require("../../../models/Admin");
 const Token = require("../../../models/Token");
 const jwt = require("jsonwebtoken");
-const makeJsonResponse = require("../../../../utils/response");
 const twilio = require("../../../../utils/twilio/twilio");
 const twilioVerify = require("../../../../utils/twilio/twilioVerify");
 const bcrypt = require("bcrypt");
-
+const { makeJsonResponse } = require('../../../../utils/response')
 module.exports = {
   // Admin login
   loginAdmin: async (req, res) => {
@@ -15,7 +14,7 @@ module.exports = {
       // Find admin by email
       const admin = await Admin.findOne({ email });
       if (!admin) {
-        return res.status(404).json(makeJsonResponse("Admin not found", {}, {}, 404, false));
+        return res.status(401).json(makeJsonResponse("Admin not found", {}, {}, 401, false));
       }
 
       // Validate password
