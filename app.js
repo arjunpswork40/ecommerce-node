@@ -35,7 +35,7 @@ const userAuthRoutes = require('./routes/User/Auth/userAuthRoutes')
 const cartRoutes=require('./routes/User/Cart/cartRoutes')
 const reviewRoute=require('./routes/User/Review/reviewRoute')
 const wishlist=require('./routes/User/wishlistRoute')
-
+const userProfileRoutes = require('./routes/User/Profile/ProfileRoutes')
 //user payment routes
 const userPaymentRoutes = require('./routes/User/Payments/userPaymentRoutes')
 
@@ -116,6 +116,7 @@ app.use ('/user/wishlist',wishlist)
 //user payment routes
 
 app.use('/user/payment',userPaymentRoutes)
+app.use('/user/profile',userProfileRoutes)
 
 //admin routes
 

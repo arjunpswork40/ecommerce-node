@@ -3,12 +3,12 @@ const { body, validationResult } = require('express-validator');
 const validator = require('validator');
 
 const adminLoginValidator = [
-    body('email').isEmail().withMessage('Please enter a valid email address'),
-    // body('password')
-    //     .isLength({ min: 8 })
-    //     .withMessage('Password must be at least 8 characters')
-    //     .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/)
-    //     .withMessage('Password must contain at least one lowercase letter, one uppercase letter, one number, and one special character'),
+    body('email')
+        .isEmail()
+        .withMessage('Please enter a valid email'),
+    body('password')
+        .notEmpty()
+        .withMessage('Password cannot be empty'),
     (req, res, next) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {

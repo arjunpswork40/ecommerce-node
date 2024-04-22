@@ -240,6 +240,8 @@ module.exports = {
     
     loginData: async (req, res) => {
         const { mobileNumber, password } = req.body;
+        console.log('sss=>',responseData)
+
         try {
             const existingUser = await User.findOne({ mobileNumber: mobileNumber });
             if (!existingUser) {
@@ -251,7 +253,7 @@ module.exports = {
                     if (!isPasswordValid) {
                         responseData.httpStatusCode = 401;
                         responseData.message = "Invalid password or mobile number"
-                        responseData.verificationStatus = false;
+                        responseData.success = false;
                     } else {
                         // Generate JWT token
                         const token = jwt.sign({ userId: existingUser._id }, secretKey, { expiresIn: '1h' });
@@ -275,6 +277,7 @@ module.exports = {
             responseData.message = "Internal server error" 
             console.error("Error during login ", error);
         }
+        console.log(responseData)
         const response = makeJsonResponse(
             responseData.message,
             responseData.data,
