@@ -1,4 +1,5 @@
 const { makeJsonResponse } = require("../../utils/response");
+const Admin = require("../models/Admin");
 
 const User = require('../models/User')
 
@@ -15,10 +16,10 @@ module.exports = {
 
     insertDummyUser: async (req, res, next) => {
         try{
-            let user = new User({
+            let user = new Admin({
                 name:'ardsjudn',
                 email:'ardjusn@ard.com',
-
+                password:'asdf'
             })
             user.save();
             responseData.data = user

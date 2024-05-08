@@ -7,7 +7,7 @@ const {
 }=require('../../../app/middlewares/cart/cartValidators')
 
 const {
-    addToCart,
+    updateCart,
     getCartItems,
     deleteCartItem,
     clearCart,
@@ -15,7 +15,7 @@ const {
 } = require('../../../app/controllers/User/Cart/cartController')
 
 //add to cart
-router.post("/addToCart",validateAddToCart,verifier.tokenVerifier,addToCart)
+router.post("/updateCart",verifier.tokenVerifier,validateAddToCart,updateCart)
 
 //get items in the cart
 router.get('/cartItems',verifier.tokenVerifier,getCartItems)

@@ -9,7 +9,10 @@ const categorySchema = new mongoose.Schema({
     type: String,
     required: false
   },
-  price_by_ml:[priceByMLSchema],
+  price_by_ml:{
+    type: String,
+    required: false
+  },
   
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },

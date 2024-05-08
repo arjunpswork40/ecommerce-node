@@ -22,8 +22,8 @@ const productValidator = [
 
   // Validate price_by_ml array
   body('price_by_ml')
-    .isArray({ min: 1 })
-    .withMessage('Price by ml should be an array with at least one item'),
+    .notEmpty()
+    .withMessage('Price by ml is required'),
 
   // Validate category_ids array
   body('category_ids')
@@ -55,13 +55,11 @@ const productValidator = [
 
   // Validate items_in_the_box array
   body('items_in_the_box')
-    .optional()
-    .isArray()
-    .withMessage('Items in the box should be an array'),
+    .notEmpty()
+    .withMessage('Items in the box is required'),
 
   // Validate offer_deduction_percentage
   body('offer_deduction_percentage')
-    .optional()
     .isNumeric()
     .withMessage('Offer deduction percentage should be a numeric value'),
 

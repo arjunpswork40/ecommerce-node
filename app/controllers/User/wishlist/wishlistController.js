@@ -13,7 +13,7 @@ let responseData = {
 module.exports ={
     // Add to wishlist
 
-    addToWishlist : async(req,res) =>{
+    updateWishlist : async(req,res) =>{
         try{
             const userId = req.user;
       const  productId  = req.body;

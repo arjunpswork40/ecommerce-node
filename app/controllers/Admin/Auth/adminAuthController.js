@@ -24,7 +24,7 @@ module.exports = {
       }
 
       // Generate JWT token
-      const token = jwt.sign({ _id: admin._id }, process.env.secretKey, {
+      const token = jwt.sign({ _id: admin._id }, process.env.SECRET_KEY_JWT || '$123EA$456$9633972298$', {
         expiresIn: "1h",
       });
 
