@@ -3,7 +3,7 @@ const router = express.Router();
 const tokenVerifier = require("../../app/middlewares/auth/tokenVerifier")
 
 const {
-    addToWishlist,
+    updateWishlist,
     getWishlstItem,
     clearWishlist,
     fetchProduct
@@ -14,7 +14,7 @@ const {
 
 
 //add to wishlist and remove
-router.put("/addToWishlist",tokenVerifier.tokenVerifier,addToWishlist)
+router.put("/updateWishlist",tokenVerifier.tokenVerifier,updateWishlist)
 
 //list wishlist items
 router.get('/wishlistItems',tokenVerifier.tokenVerifier, getWishlstItem)

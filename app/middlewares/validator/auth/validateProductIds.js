@@ -9,7 +9,7 @@ module.exports = {
   validateProductId: (req, res, next) => {
     const id = req.params.id;
 
-    if (!isValidObjectId(id)) {
+    if (isValidObjectId(id)) {
       let response = makeJsonResponse("Invalid product id", {}, [], 400, false);
       return res.status(400).json(response);
     }

@@ -3,7 +3,8 @@ const { makeJsonResponse } = require("../../../../utils/response");
 
 module.exports = {
   addProduct: async (req, res) => {
-    const images = req.files.map((file) => file.location);
+    const images = req.files;
+    console.log('images=>',images['mainImage'])
     try {
       const {
         name,
@@ -20,9 +21,18 @@ module.exports = {
         offers,
       } = req.body;
 
+      const mainImageFromRequest = images['mainImage'][0]
+
+      const mainImage = process.env.BASE_URL + mainImageFromRequest.destination + mainImageFromRequest.filename
+
+      let otherImages = images['otherImages'].map(item => {
+        return process.env.BASE_URL + item.destination + item.filename
+      })
       // Create a new Product instance
       const product = new Product({
         name,
+        otherImages,
+        mainImage,
         tag_line,
         description,
         price_by_ml,
@@ -168,6 +178,8 @@ module.exports = {
       // Send response
       res.status(200).json(response);
     } catch (error) {
+
+      console.log(error)
       const response = makeJsonResponse(
         "Failed to fetch products",
         {},

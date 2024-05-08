@@ -13,7 +13,7 @@ let responseData = {
 
 module.exports = {
   // Add items to the cart
-  addToCart: async (req, res) => {
+  updateCart: async (req, res) => {
     try {
       const { productId, quantity } = req.body;
 

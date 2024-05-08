@@ -40,7 +40,10 @@ const productSchema = new mongoose.Schema({
     type: String,
     required: false
   },
-  price_by_ml:[priceByMLSchema],
+  price_by_ml:{
+    type: String,
+    required: false
+  },
   category_ids: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Category'
@@ -66,7 +69,11 @@ const productSchema = new mongoose.Schema({
     type: String,
     required: false
   },
-  images:[{
+  mainImage: {
+    type: String,
+    required: false
+  },
+  otherImages:[{
     type:String
   }],
   items_in_the_box: [{

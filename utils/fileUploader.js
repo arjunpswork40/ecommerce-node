@@ -29,7 +29,7 @@ const storage = multer.diskStorage({
 const storageDynamicImages = multer.diskStorage({
   
   destination: function (req, file, cb) {
-    cb(null, 'uploads/institute-documents')
+    cb(null, 'uploads/products')
   },
   filename: function (req, file, cb) {
     let fileName = file.originalname.replace(/ /g, '_');
