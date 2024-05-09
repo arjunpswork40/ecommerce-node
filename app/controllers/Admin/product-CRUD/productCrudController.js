@@ -23,10 +23,10 @@ module.exports = {
 
       const mainImageFromRequest = images['mainImage'][0]
 
-      const mainImage = process.env.BASE_URL + mainImageFromRequest.destination + mainImageFromRequest.filename
+      const mainImage = process.env.BASE_URL + '/' +  mainImageFromRequest.destination + '/' +  mainImageFromRequest.filename
 
       let otherImages = images['otherImages'].map(item => {
-        return process.env.BASE_URL + item.destination + item.filename
+        return process.env.BASE_URL + '/' +  item.destination + '/' +  item.filename
       })
       // Create a new Product instance
       const product = new Product({
@@ -62,9 +62,11 @@ module.exports = {
   },
 
   updateProduct: async (req, res) => {
+    const images = req.files;
+
     try {
       const productId = req.params.productId;
-      const {
+      let {
         name,
         tag_line,
         description,
@@ -79,6 +81,14 @@ module.exports = {
         offers,
       } = req.body;
 
+      const mainImageFromRequest = images['mainImage'][0]
+
+      const mainImage = process.env.BASE_URL + '/' + mainImageFromRequest.destination + '/' +  mainImageFromRequest.filename
+
+      let otherImages = images['otherImages'].map(item => {
+        return process.env.BASE_URL + '/' +  item.destination + '/' +  item.filename
+      })
+
       // Fetch the product by ID
       const product = await Product.findById(productId);
 
@@ -86,21 +96,35 @@ module.exports = {
         return res.status(404).json(makeJsonResponse("Product not found", [], [], 404, false));
       }
 
+      otherImagesFromDB = product.otherImages;
+
+      otherImages = [...otherImages,...otherImagesFromDB]
+
+      let tagsForIteration = tags ?? [];
+      let categoryIdsForIteration = category_ids ?? [];
+      let relatedItemIdsForIteration = related_item_ids ?? [];
+      let offersForIteration = offers ?? [];
+      tags = [...tagsForIteration,...product.tags];
+      category_ids = [ ...categoryIdsForIteration,...product.category_ids]
+      related_item_ids = [...relatedItemIdsForIteration,...product.related_item_ids]
+      offers = [...offersForIteration,...product.offers]
+      
+
       // Update the product with new value
       product.name = name || product.name;
       product.tag_line = tag_line || product.tag_line;
       product.description = description || product.description;
       product.price_by_ml = price_by_ml || product.price_by_ml;
-      product.category_ids = category_ids || product.category_ids;
-      product.related_item_ids = related_item_ids || product.related_item_ids;
-      product.tags = tags || product.tags;
+      product.category_ids = category_ids;
+      product.related_item_ids = related_item_ids;
+      product.tags = tags;
       product.fragrance = fragrance || product.fragrance;
       product.bottle_color = bottle_color || product.bottle_color;
-      product.images = req.files.map((file) => file.location) || product.images;
       product.items_in_the_box = items_in_the_box || product.items_in_the_box;
-      product.offer_deduction_percentage =
-        offer_deduction_percentage || product.offer_deduction_percentage;
-      product.offers = offers || product.offers;
+      product.offer_deduction_percentage = offer_deduction_percentage || product.offer_deduction_percentage;
+      product.offers = offers;
+      product.mainImage = mainImage.length > 0 ? mainImage : product.mainImage;
+      product.otherImages = otherImages;
 
       // Save the updated product
       const updatedProduct = await product.save();
