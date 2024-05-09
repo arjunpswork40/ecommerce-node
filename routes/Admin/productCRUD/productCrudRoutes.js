@@ -4,7 +4,11 @@ const upload = require("../../../utils/s3/s3multer");
 
 const {
   productValidator,
-} = require("../../../app/middlewares/validator/auth/productInputValidator");
+} = require("../../../app/middlewares/validator/product/productInputValidator");
+
+const {
+    productUpdateValidator,
+  } = require("../../../app/middlewares/validator/product/productUpdateInputValidator");
 const { validateProductId } = require("../../../app/middlewares/validator/auth/validateProductIds");
 const { tokenVerifierAdmin,tokenVerifier } = require("../../../app/middlewares/auth/tokenVerifier");
 const {
@@ -97,12 +101,16 @@ router.get("/getProduct/:productId", tokenVerifierAdmin, validateProductId, view
 
 // update product details
 router.put(
-  "/updateProduct/:productId",
-  tokenVerifierAdmin,
-  validateProductId,
-  productValidator,
-  upload.array("images", 10),
-  updateProduct
+    "/updateProduct/:productId",
+    tokenVerifierAdmin,
+    validateProductId,
+    [docUpload.fields([
+        { name: 'mainImage',maxCount:1},
+        { name: 'otherImages',maxCount:10},
+    ])],
+    handleMulterError,
+    productUpdateValidator,
+    updateProduct
 );
 
 //delete a product
