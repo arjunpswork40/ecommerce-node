@@ -73,11 +73,11 @@ const wishListSchema = new mongoose.Schema({
 })
 
 const userSchema = new mongoose.Schema({
-  first_name: {
+  firstName: {
     type: String,
     required: false
   },
-  last_name: {
+  lastName: {
     type: String,
     required: false
   },

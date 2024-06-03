@@ -124,4 +124,9 @@ module.exports = {
         .json(makeJsonResponse("Error updating password", {}, [error.message], 500, false));
     }
   },
+  verifyTokenFromRequest: async (req,res) => {
+    return res
+    .status(200)
+    .json(makeJsonResponse("token verified successfully", req.userData, {}, 200, true));
+  }
 };

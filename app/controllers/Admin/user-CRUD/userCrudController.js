@@ -5,7 +5,7 @@ module.exports = {
   // list all users
   listUsers: async (req, res) => {
     try {
-      const users = await User.find({},{ first_name:1,last_name:1,phone: 1, email: 1 });
+      const users = await User.find({},{ firstName:1,lastName:1,mobileNumber: 1, email: 1 });
       const response = makeJsonResponse("Users fetched successfully", users, [], 200, true);
       res.status(200).json(response);
     } catch (error) {
@@ -16,7 +16,8 @@ module.exports = {
 
   // add a new user
   addNewUser: async (req, res) => {
-    const { first_name, last_name, email, mobileNumber, password } = req.body;
+    const { firstName, lastName, email, mobileNumber, password } = req.body;
+    console.log('addNewUser==>',req.body)
     try {
       const existingUser = await User.findOne({ mobileNumber: mobileNumber });
       if (existingUser) {
@@ -27,8 +28,8 @@ module.exports = {
           );
       } else {
         const user = new User({
-          first_name: first_name,
-          last_name: last_name,
+          firstName: firstName,
+          lastName: lastName,
           email: email,
           mobileNumber: mobileNumber,
           password: password,

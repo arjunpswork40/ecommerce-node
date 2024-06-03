@@ -94,6 +94,7 @@ module.exports = {
     },
     tokenVerifierAdmin: async (req, res, next) => {
         let apiAuthKeyFromRequest = req.headers['authorization'];
+        console.log(apiAuthKeyFromRequest)
         let apiAuthKey = process.env.SECRET_KEY_JWT || '$123EA$456$9633972298$';
         if (apiAuthKeyFromRequest) {
 
